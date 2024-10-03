@@ -49,13 +49,9 @@ const useFetchProposals = () => {
       // eslint-disable-next-line no-unused-vars
       const [_, proposalsResult] = await multicall.aggregate.staticCall(calls);
 
-      // console.log("Multicall Proposals:::",proposalsResult);
-
       const decodedProposals = proposalsResult.map((result) =>
         intfce.decodeFunctionResult("proposals", result)
       );
-
-      // console.log("Fetched Proposals", decodedProposals);
 
       const data = decodedProposals.map((proposalStruct, index) => ({
         proposalId: proposalsId[index],
@@ -66,51 +62,7 @@ const useFetchProposals = () => {
         deadline: proposalStruct.votingDeadline,
         executed: proposalStruct.executed,
       }));
-
-      // const data = {
-      //     description: decodedProposals.description,
-      //         amount: decodedProposals.amount,
-      //         minRequiredVote: decodedProposals.minVotesToPass,
-      //         voteCount: decodedProposals.voteCount,
-      //         deadline: decodedProposals.votingDeadline,
-      //         executed: decodedProposals.executed
-      // }
-      // console.log("DATA:::", data)
-      // setProposals(decodedProposals);
       setProposals(data);
-      // setIsFetchingProposals(false);
-
-      // proposalsId.forEach(async (proposalId) => {
-      //     const proposalStruct = await readOnlyProposalContract.proposals(proposalId);
-
-      //     // const target = {...proposalStruct}
-      //     // const handler = {};
-      //     // const proxy = new Proxy(target, handler);
-
-      //     // {
-      //         // reference to the original target
-      //         // proxy.__target = target;
-
-      //         // unveil target
-      //         // console.log("Proxy", proxy.__target);
-      //     // }
-
-      //     setProposals((prevState) => [...prevState, {
-      //         description: proposalStruct.description,
-      //         amount: proposalStruct.amount,
-      //         minRequiredVote: proposalStruct.minVotesToPass,
-      //         voteCount: proposalStruct.voteCount,
-      //         deadline: proposalStruct.votingDeadline,
-      //         executed: proposalStruct.executed
-      //     }])
-      //     console.log("Proposal Struct:::", proposalStruct)
-      //     console.log("Proposal object", {description: proposalStruct.description,
-      //         amount: proposalStruct.amount,
-      //         minRequiredVote: proposalStruct.minVotesToPass,
-      //         voteCount: proposalStruct.voteCount,
-      //         deadline: proposalStruct.votingDeadline,
-      //         executed: proposalStruct.executed})
-      // })
     } catch (error) {
       console.log("Error fetching proposals", error);
     }
@@ -124,28 +76,6 @@ const useFetchProposals = () => {
     const votingFilter = readOnlyProposalContract.filters.Voted();
 
     readOnlyProposalContract.on(proposalCreationFilter, getProposals);
-    // readOnlyProposalContract.on(proposalCreationFilter, (event) => {
-    //     // console.log("EVENT", event.args.description)
-    //     // const proposal = event.args
-    //     // const newObj = {
-    //     //     proposalId: proposal.proposalsId,
-    //     //     description: proposal.description,
-    //     //     amount: proposal.amount,
-    //     //     minRequiredVote: proposal.minVotesToPass,
-    //     //     voteCount: proposal.voteCount,
-    //     //     deadline: proposal.votingDeadline
-    //     // }
-    //     // console.log("NEW OBJ", newObj)
-    //     // setProposals((prevProposals) => [...prevProposals, newObj])
-    //     getProposals();
-    // });
-
-    // readOnlyProposalContract.on("ProposalCreated", (value) => {
-    //     console.log("Proposal Creation Value:::", value);
-
-    //     getProposals();
-    // })
-
     readOnlyProposalContract.on(votingFilter, getProposals);
 
     return () => {
